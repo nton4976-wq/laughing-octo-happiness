@@ -198,16 +198,11 @@
     .modal-panel,
     .editor-card,
     .session-hero-card,
-    .quick-summary-strip,
-    .filter-block{
+    .quick-summary-strip{
       background:var(--surface);
       border:1px solid var(--line);
       box-shadow:var(--shadow);
     }
-
-    /* =========================
-       SMART HEADER
-    ========================= */
 
     .session-hero-card{
       background:linear-gradient(180deg,var(--surface),var(--surface-2));
@@ -219,7 +214,7 @@
 
     .session-hero-main{
       display:grid;
-      grid-template-columns:1fr;
+      grid-template-columns:1fr auto;
       gap:12px;
       align-items:start;
     }
@@ -290,35 +285,68 @@
     .session-hero-actions{
       display:flex;
       align-items:flex-start;
-      justify-content:stretch;
+      justify-content:flex-end;
     }
 
-    .hero-edit-btn{
+    .menu-toggle-btn{
+      width:46px;
+      min-width:46px;
+      height:46px;
+      border-radius:16px;
+      background:var(--surface);
+      border:1px solid var(--line);
+      box-shadow:var(--shadow-xs);
+    }
+
+    .menu-toggle-btn.active{
+      background:var(--primary-soft);
+      color:var(--primary-dark);
+      border-color:rgba(16,185,129,.24);
+    }
+
+    .hero-menu{
+      display:grid;
+      gap:8px;
+      animation:fadeIn .18s ease;
+    }
+
+    .hero-menu.hidden{
+      display:none !important;
+    }
+
+    .menu-item{
       width:100%;
       min-height:46px;
       border-radius:16px;
-      padding:0 16px;
-      white-space:nowrap;
-    }
-
-    .smart-actions-row{
-      display:grid;
-      grid-template-columns:1fr 1fr;
+      padding:0 14px;
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
       gap:10px;
+      background:var(--surface);
+      border:1px solid var(--line);
+      color:var(--text-soft);
+      font-weight:800;
+      box-shadow:var(--shadow-xs);
+      transition:.2s ease;
     }
 
-    .smart-actions-row .smart-action-btn:last-child{
-      grid-column:1 / -1;
+    .menu-item:hover{
+      transform:translateY(-1px);
+      background:var(--surface-2);
     }
 
-    .smart-action-btn{
-      width:100%;
-      justify-content:center;
+    .menu-item-primary{
+      background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+      color:#fff;
+      border-color:transparent;
+      box-shadow:0 12px 24px rgba(16,185,129,.18);
     }
 
-    /* =========================
-       COLLAPSIBLE EDITOR
-    ========================= */
+    .menu-item-primary:hover{
+      filter:brightness(1.03);
+      background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    }
 
     .editor-card{
       border-radius:20px;
@@ -457,10 +485,6 @@
       box-shadow:var(--shadow-xs);
     }
 
-    /* =========================
-       QUICK SUMMARY STRIP
-    ========================= */
-
     .quick-summary-strip{
       position:sticky;
       top:8px;
@@ -522,20 +546,10 @@
       transition:width .28s ease;
     }
 
-    /* =========================
-       FILTER AREA
-    ========================= */
-
     .filter-toolbar{
       display:grid;
       gap:10px;
       margin-bottom:12px;
-    }
-
-    .filter-block{
-      border-radius:20px;
-      padding:12px;
-      box-shadow:var(--shadow-sm);
     }
 
     .search-wrap{
@@ -729,10 +743,6 @@
       transition:width .28s ease;
     }
 
-    /* =========================
-       STUDENT LIST
-    ========================= */
-
     .student-list{
       border-radius:20px;
       overflow:hidden;
@@ -831,10 +841,6 @@
       font-weight:800;
       box-shadow:var(--shadow-sm);
     }
-
-    /* =========================
-       DASHBOARD
-    ========================= */
 
     .dashboard-stack{
       display:grid;
@@ -1008,10 +1014,6 @@
       background:var(--primary-soft);
     }
 
-    /* =========================
-       FAB + NAV
-    ========================= */
-
     .fab{
       position:fixed;
       right:max(14px, env(safe-area-inset-right));
@@ -1068,10 +1070,6 @@
       color:var(--primary);
       background:var(--primary-soft);
     }
-
-    /* =========================
-       MODAL / LOADING / TOAST
-    ========================= */
 
     .modal{
       position:fixed;
@@ -1215,25 +1213,9 @@
         padding:14px 14px 10px;
       }
 
-      .session-hero-main{
-        grid-template-columns:1fr auto;
-      }
-
-      .session-hero-actions{
-        justify-content:flex-end;
-        align-items:flex-start;
-      }
-
-      .hero-edit-btn{
-        width:auto;
-      }
-
-      .smart-actions-row{
-        grid-template-columns:repeat(3,minmax(0,1fr));
-      }
-
-      .smart-actions-row .smart-action-btn:last-child{
-        grid-column:auto;
+      .hero-menu{
+        max-width:320px;
+        margin-left:auto;
       }
 
       .editor-grid{
@@ -1288,7 +1270,7 @@
 <body>
   <div class="app">
     <header class="topbar">
-      <div class="topbar-inner compact-topbar">
+      <div class="topbar-inner">
         <section class="session-hero-card">
           <div class="session-hero-main">
             <div class="session-hero-copy">
@@ -1324,34 +1306,40 @@
             </div>
 
             <div class="session-hero-actions">
-              <button class="primary-btn hero-edit-btn" id="toggleEditorBtn" type="button">
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M12 20h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  <path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+              <button class="icon-btn menu-toggle-btn" id="menuToggleBtn" type="button" aria-label="Open menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
                 </svg>
-                <span id="toggleEditorText">Edit Session</span>
               </button>
             </div>
           </div>
 
-          <div class="smart-actions-row">
-            <button class="ghost-btn smart-action-btn" id="toggleThemeBtn" type="button" title="Toggle dark mode">
-              <span id="themeBtnIcon">🌙</span>
-              <span id="themeBtnText">Dark Mode</span>
+          <div class="hero-menu hidden" id="heroMenu">
+            <button class="menu-item menu-item-primary" id="toggleEditorBtn" type="button">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 20h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+              <span id="toggleEditorText">Edit Session</span>
             </button>
 
-            <button class="ghost-btn smart-action-btn" id="toggleCollegePanelBtn" type="button">
+            <button class="menu-item" id="toggleCollegePanelBtn" type="button">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M4 5h16l-6.5 7.5V19l-3 1v-7.5L4 5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
               </svg>
               <span id="collegeToggleText">Show Colleges</span>
             </button>
 
-            <button class="secondary-btn smart-action-btn" id="refreshBtn" type="button">
+            <button class="menu-item" id="refreshBtn" type="button">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M20 11a8 8 0 1 0 2.3 5.6M20 4v7h-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
               <span>Refresh</span>
+            </button>
+
+            <button class="menu-item" id="toggleThemeBtn" type="button" title="Toggle dark mode">
+              <span id="themeBtnIcon">🌙</span>
+              <span id="themeBtnText">Dark Mode</span>
             </button>
           </div>
         </section>
@@ -1405,7 +1393,7 @@
           </div>
 
           <div class="editor-footer">
-            <div class="meta-inline editor-meta-inline">
+            <div class="meta-inline">
               <span class="meta-pill">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="2"/>
@@ -1744,7 +1732,8 @@
     theme: localStorage.getItem('sat-theme') === 'dark' ? 'dark' : 'light',
     savingSession: false,
     savingStudent: false,
-    editorOpen: false
+    editorOpen: false,
+    menuOpen: false
   };
 
   const el = {
@@ -1770,6 +1759,9 @@
     quickAttendanceText: document.getElementById('quickAttendanceText'),
     quickSummaryFill: document.getElementById('quickSummaryFill'),
     quickSummaryStrip: document.getElementById('quickSummaryStrip'),
+
+    menuToggleBtn: document.getElementById('menuToggleBtn'),
+    heroMenu: document.getElementById('heroMenu'),
 
     toggleEditorBtn: document.getElementById('toggleEditorBtn'),
     toggleEditorText: document.getElementById('toggleEditorText'),
@@ -1920,19 +1912,32 @@
   function applyTheme() {
     const dark = state.theme === 'dark';
     el.body.classList.toggle('dark', dark);
-    el.themeBtnIcon.textContent = dark ? '☀️' : '🌙';
-    el.themeBtnText.textContent = dark ? 'Light Mode' : 'Dark Mode';
+    if (el.themeBtnIcon) el.themeBtnIcon.textContent = dark ? '☀️' : '🌙';
+    if (el.themeBtnText) el.themeBtnText.textContent = dark ? 'Light Mode' : 'Dark Mode';
     localStorage.setItem('sat-theme', dark ? 'dark' : 'light');
+  }
+
+  function setMenuOpen(open) {
+    state.menuOpen = !!open;
+
+    if (el.heroMenu) {
+      el.heroMenu.classList.toggle('hidden', !state.menuOpen);
+    }
+
+    if (el.menuToggleBtn) {
+      el.menuToggleBtn.classList.toggle('active', state.menuOpen);
+    }
   }
 
   function setEditorOpen(open) {
     state.editorOpen = !!open;
 
-    if (!el.sessionEditorCard) return;
-    el.sessionEditorCard.classList.toggle('collapsed', !state.editorOpen);
+    if (el.sessionEditorCard) {
+      el.sessionEditorCard.classList.toggle('collapsed', !state.editorOpen);
+    }
 
     if (el.toggleEditorText) {
-      el.toggleEditorText.textContent = state.editorOpen ? 'Hide Editor' : 'Edit Session';
+      el.toggleEditorText.textContent = state.editorOpen ? 'Hide Session' : 'Edit Session';
     }
 
     updateQuickStripVisibility();
@@ -1966,9 +1971,9 @@
 
   function toggleCollegePanel(force) {
     state.collegePanelOpen = typeof force === 'boolean' ? force : !state.collegePanelOpen;
-    el.collegePanel.classList.toggle('open', state.collegePanelOpen);
-    el.collegeToggleText.textContent = state.collegePanelOpen ? 'Hide Colleges' : 'Show Colleges';
-    el.toggleCollegesInlineText.textContent = state.collegePanelOpen ? 'Hide' : 'Show';
+    if (el.collegePanel) el.collegePanel.classList.toggle('open', state.collegePanelOpen);
+    if (el.collegeToggleText) el.collegeToggleText.textContent = state.collegePanelOpen ? 'Hide Colleges' : 'Show Colleges';
+    if (el.toggleCollegesInlineText) el.toggleCollegesInlineText.textContent = state.collegePanelOpen ? 'Hide' : 'Show';
   }
 
   function getAllColleges() {
@@ -1980,7 +1985,7 @@
 
   function getCoursesForCollege(college) {
     const fromStudents = state.students
-      .filter(s => college === 'All' ? true : s.college === college)
+      .filter(s => (college === 'All' ? true : s.college === college))
       .map(s => s.course);
 
     const fromDefaults = college === 'All'
@@ -2109,22 +2114,24 @@
     if (el.quickSessionTitle) el.quickSessionTitle.textContent = title;
 
     if (!state.session && draft.title) {
-      el.sheetNameText.textContent = `Will create: ${sanitizeSheetName(draft.title) || 'Session'}`;
+      if (el.sheetNameText) el.sheetNameText.textContent = `Will create: ${sanitizeSheetName(draft.title) || 'Session'}`;
       return;
     }
 
     if (state.session) {
       if (draft.title && draft.title !== state.session.title) {
-        el.sheetNameText.textContent = `Will create: ${sanitizeSheetName(draft.title) || 'Session'}`;
+        if (el.sheetNameText) el.sheetNameText.textContent = `Will create: ${sanitizeSheetName(draft.title) || 'Session'}`;
       } else {
-        el.sheetNameText.textContent = state.session.sheetName || 'No sheet loaded';
+        if (el.sheetNameText) el.sheetNameText.textContent = state.session.sheetName || 'No sheet loaded';
       }
     } else {
-      el.sheetNameText.textContent = 'No sheet loaded';
+      if (el.sheetNameText) el.sheetNameText.textContent = 'No sheet loaded';
     }
   }
 
   function renderSessionOptions() {
+    if (!el.sessionSelect) return;
+
     const currentId = state.session?.id || '';
     el.sessionSelect.innerHTML = '';
 
@@ -2158,25 +2165,29 @@
       el.collegeFilterSelect.appendChild(option);
     });
 
-    el.selectedCollegeBadge.textContent =
-      `Selected: ${state.selectedCollege === 'All' ? 'All Colleges' : state.selectedCollege}`;
+    if (el.selectedCollegeBadge) {
+      el.selectedCollegeBadge.textContent =
+        `Selected: ${state.selectedCollege === 'All' ? 'All Colleges' : state.selectedCollege}`;
+    }
 
-    el.chipRow.innerHTML = '';
-    ['All', ...colleges].forEach(college => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = `chip${state.selectedCollege === college ? ' active' : ''}`;
-      btn.textContent = college === 'All' ? 'All Colleges' : college;
-      btn.addEventListener('click', () => {
-        state.selectedCollege = college;
-        if (state.selectedCollege !== 'All') {
-          state.selectedBreakdownCollege = state.selectedCollege;
-        }
-        renderCourseFilterOptions();
-        renderAll();
+    if (el.chipRow) {
+      el.chipRow.innerHTML = '';
+      ['All', ...colleges].forEach(college => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `chip${state.selectedCollege === college ? ' active' : ''}`;
+        btn.textContent = college === 'All' ? 'All Colleges' : college;
+        btn.addEventListener('click', () => {
+          state.selectedCollege = college;
+          if (state.selectedCollege !== 'All') {
+            state.selectedBreakdownCollege = state.selectedCollege;
+          }
+          renderCourseFilterOptions();
+          renderAll();
+        });
+        el.chipRow.appendChild(btn);
       });
-      el.chipRow.appendChild(btn);
-    });
+    }
 
     const modalCurrentValue = el.studentCollegeInput.value;
     el.studentCollegeInput.innerHTML = '';
@@ -2288,9 +2299,9 @@
     if (state.selectedDate) labelParts.push(formatDateDisplay(state.selectedDate));
     if (state.selectedTime) labelParts.push(formatTimeDisplay(state.selectedTime));
 
-    el.currentFilterName.textContent = labelParts.join(' • ');
-    el.filterBarLabel.textContent = `${percent}% • ${attended} / ${total}`;
-    el.filterBarFill.style.width = `${percent}%`;
+    if (el.currentFilterName) el.currentFilterName.textContent = labelParts.join(' • ');
+    if (el.filterBarLabel) el.filterBarLabel.textContent = `${percent}% • ${attended} / ${total}`;
+    if (el.filterBarFill) el.filterBarFill.style.width = `${percent}%`;
   }
 
   function renderStudentList() {
@@ -2340,10 +2351,10 @@
     const pending = total - attended;
     const percent = total ? Math.round((attended / total) * 100) : 0;
 
-    el.attendedCount.textContent = attended;
-    el.pendingCount.textContent = pending;
-    el.attendancePercent.textContent = `${percent}%`;
-    el.progressRing.style.setProperty('--p', percent);
+    if (el.attendedCount) el.attendedCount.textContent = attended;
+    if (el.pendingCount) el.pendingCount.textContent = pending;
+    if (el.attendancePercent) el.attendancePercent.textContent = `${percent}%`;
+    if (el.progressRing) el.progressRing.style.setProperty('--p', percent);
 
     if (el.quickAttendanceText) {
       el.quickAttendanceText.textContent = `${percent}% • ${attended} / ${total}`;
@@ -2496,6 +2507,7 @@
     applyTheme();
     bindEvents();
     setEditorOpen(false);
+    setMenuOpen(false);
     showLoading(true, 'Loading attendance tracker...');
 
     try {
@@ -2543,6 +2555,7 @@
       showLoading(true, 'Loading selected session...');
       const res = await serverRequest('loadSession', { sessionId });
       setDataFromResponse(res, true);
+      setMenuOpen(false);
       showToast('Session loaded.');
 
       if (isMobile()) {
@@ -2578,6 +2591,7 @@
     try {
       const res = await serverRequest('saveSessionMeta', { session: draft });
       setDataFromResponse(res, true);
+      setMenuOpen(false);
       showToast(titleChanged ? 'New sheet/session created from updated title.' : 'Session details saved.');
 
       if (isMobile()) {
@@ -2678,86 +2692,144 @@
   }
 
   function bindEvents() {
-    el.toggleThemeBtn.addEventListener('click', () => {
-      state.theme = state.theme === 'dark' ? 'light' : 'dark';
-      applyTheme();
-    });
+    if (el.toggleThemeBtn) {
+      el.toggleThemeBtn.addEventListener('click', () => {
+        state.theme = state.theme === 'dark' ? 'light' : 'dark';
+        applyTheme();
+        setMenuOpen(false);
+      });
+    }
 
-    el.toggleEditorBtn.addEventListener('click', () => {
-      setEditorOpen(!state.editorOpen);
-    });
+    if (el.menuToggleBtn) {
+      el.menuToggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setMenuOpen(!state.menuOpen);
+      });
+    }
 
-    el.closeEditorBtn.addEventListener('click', () => {
-      setEditorOpen(false);
-    });
+    if (el.toggleEditorBtn) {
+      el.toggleEditorBtn.addEventListener('click', () => {
+        setEditorOpen(!state.editorOpen);
+        setMenuOpen(false);
+      });
+    }
 
-    el.toggleCollegePanelBtn.addEventListener('click', () => toggleCollegePanel());
-    el.toggleCollegesInlineBtn.addEventListener('click', () => toggleCollegePanel());
+    if (el.closeEditorBtn) {
+      el.closeEditorBtn.addEventListener('click', () => {
+        setEditorOpen(false);
+      });
+    }
 
-    el.refreshBtn.addEventListener('click', refreshCurrentSession);
-    el.loadSessionBtn.addEventListener('click', handleLoadSession);
-    el.saveSessionBtn.addEventListener('click', handleSaveSession);
+    if (el.toggleCollegePanelBtn) {
+      el.toggleCollegePanelBtn.addEventListener('click', () => {
+        toggleCollegePanel();
+        setMenuOpen(false);
+      });
+    }
 
-    el.titleInput.addEventListener('input', renderMetaPreview);
-    el.dateInput.addEventListener('input', renderMetaPreview);
-    el.startTimeInput.addEventListener('input', renderMetaPreview);
-    el.endTimeInput.addEventListener('input', renderMetaPreview);
+    if (el.toggleCollegesInlineBtn) {
+      el.toggleCollegesInlineBtn.addEventListener('click', () => toggleCollegePanel());
+    }
 
-    el.searchInput.addEventListener('input', e => {
-      state.search = e.target.value;
-      renderFilterSummaryBar();
-      renderStudentList();
-    });
+    if (el.refreshBtn) {
+      el.refreshBtn.addEventListener('click', () => {
+        setMenuOpen(false);
+        refreshCurrentSession();
+      });
+    }
 
-    el.collegeFilterSelect.addEventListener('change', e => {
-      state.selectedCollege = e.target.value;
-      if (state.selectedCollege !== 'All') {
-        state.selectedBreakdownCollege = state.selectedCollege;
-      }
-      renderCourseFilterOptions();
-      renderAll();
-    });
+    if (el.loadSessionBtn) el.loadSessionBtn.addEventListener('click', handleLoadSession);
+    if (el.saveSessionBtn) el.saveSessionBtn.addEventListener('click', handleSaveSession);
 
-    el.courseFilterSelect.addEventListener('change', e => {
-      state.selectedCourse = e.target.value;
-      renderFilterSummaryBar();
-      renderStudentList();
-    });
+    if (el.titleInput) el.titleInput.addEventListener('input', renderMetaPreview);
+    if (el.dateInput) el.dateInput.addEventListener('input', renderMetaPreview);
+    if (el.startTimeInput) el.startTimeInput.addEventListener('input', renderMetaPreview);
+    if (el.endTimeInput) el.endTimeInput.addEventListener('input', renderMetaPreview);
 
-    el.dateFilterInput.addEventListener('input', e => {
-      state.selectedDate = e.target.value;
-      renderFilterSummaryBar();
-      renderStudentList();
-    });
+    if (el.searchInput) {
+      el.searchInput.addEventListener('input', e => {
+        state.search = e.target.value;
+        renderFilterSummaryBar();
+        renderStudentList();
+      });
+    }
 
-    el.timeFilterInput.addEventListener('input', e => {
-      state.selectedTime = e.target.value;
-      renderFilterSummaryBar();
-      renderStudentList();
-    });
+    if (el.collegeFilterSelect) {
+      el.collegeFilterSelect.addEventListener('change', e => {
+        state.selectedCollege = e.target.value;
+        if (state.selectedCollege !== 'All') {
+          state.selectedBreakdownCollege = state.selectedCollege;
+        }
+        renderCourseFilterOptions();
+        renderAll();
+      });
+    }
+
+    if (el.courseFilterSelect) {
+      el.courseFilterSelect.addEventListener('change', e => {
+        state.selectedCourse = e.target.value;
+        renderFilterSummaryBar();
+        renderStudentList();
+      });
+    }
+
+    if (el.dateFilterInput) {
+      el.dateFilterInput.addEventListener('input', e => {
+        state.selectedDate = e.target.value;
+        renderFilterSummaryBar();
+        renderStudentList();
+      });
+    }
+
+    if (el.timeFilterInput) {
+      el.timeFilterInput.addEventListener('input', e => {
+        state.selectedTime = e.target.value;
+        renderFilterSummaryBar();
+        renderStudentList();
+      });
+    }
 
     el.navButtons.forEach(btn => {
-      btn.addEventListener('click', () => switchPage(btn.dataset.page));
+      btn.addEventListener('click', () => {
+        switchPage(btn.dataset.page);
+        setMenuOpen(false);
+      });
     });
 
-    el.openAddStudentBtn.addEventListener('click', () => {
-      resetAddStudentForm();
-      openAddStudentModal();
+    if (el.openAddStudentBtn) {
+      el.openAddStudentBtn.addEventListener('click', () => {
+        resetAddStudentForm();
+        openAddStudentModal();
+      });
+    }
+
+    if (el.closeAddStudentBtn) el.closeAddStudentBtn.addEventListener('click', closeAddStudentModal);
+    if (el.cancelAddStudentBtn) el.cancelAddStudentBtn.addEventListener('click', closeAddStudentModal);
+
+    if (el.addStudentModal) {
+      el.addStudentModal.addEventListener('click', e => {
+        if (e.target === el.addStudentModal) {
+          closeAddStudentModal();
+        }
+      });
+    }
+
+    if (el.studentCollegeInput) el.studentCollegeInput.addEventListener('change', renderModalCourseOptions);
+    if (el.saveStudentBtn) el.saveStudentBtn.addEventListener('click', handleSaveStudent);
+
+    document.addEventListener('click', (e) => {
+      if (!state.menuOpen) return;
+      if (el.heroMenu && el.heroMenu.contains(e.target)) return;
+      if (el.menuToggleBtn && el.menuToggleBtn.contains(e.target)) return;
+      setMenuOpen(false);
     });
 
-    el.closeAddStudentBtn.addEventListener('click', closeAddStudentModal);
-    el.cancelAddStudentBtn.addEventListener('click', closeAddStudentModal);
-
-    el.addStudentModal.addEventListener('click', e => {
-      if (e.target === el.addStudentModal) {
-        closeAddStudentModal();
+    window.addEventListener('resize', () => {
+      updateQuickStripVisibility();
+      if (window.innerWidth > 640) {
+        setMenuOpen(false);
       }
     });
-
-    el.studentCollegeInput.addEventListener('change', renderModalCourseOptions);
-    el.saveStudentBtn.addEventListener('click', handleSaveStudent);
-
-    window.addEventListener('resize', updateQuickStripVisibility);
   }
 
   initializeApp();
