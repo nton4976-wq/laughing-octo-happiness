@@ -673,6 +673,24 @@
       text-overflow:ellipsis;
     }
 
+    .filters-mini-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .edit-mode-btn{
+      min-width:110px;
+    }
+
+    .edit-mode-btn.active{
+      background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+      color:#fff;
+      border-color:transparent;
+      box-shadow:0 12px 24px rgba(16,185,129,.22);
+    }
+
     .filter-toolbar{
       display:grid;
       gap:10px;
@@ -894,6 +912,19 @@
     .student-row.checked{ background:var(--primary-soft); }
     .student-row.saving{ pointer-events:none; opacity:.72; }
 
+    .student-row.locked{
+      cursor:not-allowed;
+      opacity:.88;
+    }
+
+    .student-row.locked:hover{
+      background:transparent;
+    }
+
+    .student-row.locked.checked:hover{
+      background:var(--primary-soft);
+    }
+
     .check-btn{
       width:46px;
       height:46px;
@@ -905,6 +936,7 @@
       background:var(--surface);
       color:transparent;
       box-shadow:var(--shadow-xs);
+      transition:.2s ease;
     }
 
     body.dark .check-btn{ border-color:#334155; }
@@ -914,6 +946,11 @@
       border-color:var(--primary);
       color:#fff;
       box-shadow:0 10px 22px rgba(16,185,129,.25);
+    }
+
+    .student-row.locked .check-btn{
+      opacity:.72;
+      filter:saturate(.85);
     }
 
     .student-info{
@@ -1157,20 +1194,20 @@
       background:var(--primary-soft);
     }
 
-.fab{
-  position:fixed;
-  right:max(14px, env(safe-area-inset-right));
-  bottom:calc(var(--nav-h) + 28px);
-  width:56px;
-  height:56px;
-  border-radius:50%;
-  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-  color:#fff;
-  display:grid;
-  place-items:center;
-  box-shadow:0 18px 36px rgba(16,185,129,.28);
-  z-index:45;
-}
+    .fab{
+      position:fixed;
+      right:max(14px, env(safe-area-inset-right));
+      bottom:calc(var(--nav-h) + 28px);
+      width:56px;
+      height:56px;
+      border-radius:50%;
+      background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+      color:#fff;
+      display:grid;
+      place-items:center;
+      box-shadow:0 18px 36px rgba(16,185,129,.28);
+      z-index:45;
+    }
 
     .bottom-nav{
       position:fixed;
@@ -1397,89 +1434,98 @@
       }
     }
 
-@media (max-width:640px){
-  .compact-top-strip{
-    grid-template-columns:1fr auto;
-    gap:10px;
-  }
+    @media (max-width:640px){
+      .compact-top-strip{
+        grid-template-columns:1fr auto;
+        gap:10px;
+      }
 
-  .compact-chart{
-    grid-column:1 / -1;
-  }
+      .compact-chart{
+        grid-column:1 / -1;
+      }
 
-  .filters-mini-bar{
-    flex-direction:column;
-    align-items:flex-start;
-  }
+      .filters-mini-bar{
+        flex-direction:column;
+        align-items:flex-start;
+      }
 
-  .pagination-bar{
-    flex-direction:column;
-    align-items:center;
-    text-align:center;
-    margin-bottom:110px; /* prevents FAB from covering Next button */
-  }
+      .filters-mini-actions{
+        width:100%;
+        justify-content:flex-start;
+      }
 
-  .pagination-meta{
-    width:100%;
-    justify-items:center;
-    text-align:center;
-  }
+      .filters-mini-actions .secondary-btn{
+        flex:1 1 160px;
+      }
 
-  .pagination-actions{
-    width:100%;
-    justify-content:center;
-    flex-wrap:wrap;
-    gap:12px;
-  }
+      .pagination-bar{
+        flex-direction:column;
+        align-items:center;
+        text-align:center;
+        margin-bottom:110px;
+      }
 
-  .pagination-actions .secondary-btn{
-    min-width:120px;
-  }
+      .pagination-meta{
+        width:100%;
+        justify-items:center;
+        text-align:center;
+      }
 
-  #attendancePage{
-  padding-bottom:calc(var(--nav-h) + 130px);
-}
+      .pagination-actions{
+        width:100%;
+        justify-content:center;
+        flex-wrap:wrap;
+        gap:12px;
+      }
 
-.pagination-bar{
-  margin-top:12px;
-  margin-bottom:24px;
-  border-radius:18px;
-  padding:12px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  flex-wrap:wrap;
-}
+      .pagination-actions .secondary-btn{
+        min-width:120px;
+      }
 
-.pagination-meta{
-  display:grid;
-  gap:3px;
-  min-width:0;
-}
+      #attendancePage{
+        padding-bottom:calc(var(--nav-h) + 130px);
+      }
 
-.pagination-page{
-  font-size:.92rem;
-  font-weight:900;
-  color:var(--text);
-}
+      .pagination-bar{
+        margin-top:12px;
+        margin-bottom:24px;
+        border-radius:18px;
+        padding:12px;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:10px;
+        flex-wrap:wrap;
+      }
 
-.pagination-range{
-  font-size:.84rem;
-  font-weight:800;
-  color:var(--muted);
-}
+      .pagination-meta{
+        display:grid;
+        gap:3px;
+        min-width:0;
+      }
 
-.pagination-actions{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-}
+      .pagination-page{
+        font-size:.92rem;
+        font-weight:900;
+        color:var(--text);
+      }
 
-.pagination-actions .secondary-btn{
-  min-width:110px;
-}
+      .pagination-range{
+        font-size:.84rem;
+        font-weight:800;
+        color:var(--muted);
+      }
+
+      .pagination-actions{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        gap:12px;
+      }
+
+      .pagination-actions .secondary-btn{
+        min-width:110px;
+      }
     }
 
     @media (min-width:641px){
@@ -1692,7 +1738,7 @@
       </div>
     </header>
 
-    <main>
+        <main>
       <section id="attendancePage" class="page active" aria-label="Attendance page">
         <div class="filters-mini-bar">
           <div class="filters-mini-copy">
@@ -1700,9 +1746,15 @@
             <span id="compactFilterText">All Colleges • All Courses</span>
           </div>
 
-          <button class="secondary-btn" id="toggleFiltersBtn" type="button">
-            <span id="toggleFiltersBtnText">Show Filters</span>
-          </button>
+          <div class="filters-mini-actions">
+            <button class="secondary-btn" id="toggleFiltersBtn" type="button">
+              <span id="toggleFiltersBtnText">Show Filters</span>
+            </button>
+
+            <button class="secondary-btn edit-mode-btn" id="editModeBtn" type="button" aria-pressed="false">
+              <span id="editModeBtnText">Edit Off</span>
+            </button>
+          </div>
         </div>
 
         <div class="filter-toolbar collapsed" id="filterToolbar">
@@ -1798,7 +1850,8 @@
 
         <div id="emptyState" class="empty hidden">No students matched your current filters.</div>
       </section>
-            <section id="dashboardPage" class="page" aria-label="Dashboard page">
+
+      <section id="dashboardPage" class="page" aria-label="Dashboard page">
         <div class="dashboard-stack">
           <div class="card">
             <div class="meta-inline" style="margin-bottom:12px;">
@@ -1930,43 +1983,11 @@
   </div>
 
   <div id="toast" class="toast"></div>
-    <script>
+
+  <script>
   (() => {
     const API_URL = 'https://script.google.com/macros/s/AKfycbwM5_AjuFp0W29090T3fNQWi7eZ_ZFmiyMJRqElfvQjv3oor4_bwPJDYn3B1nsgWFqd/exec';
     const PAGE_SIZE = 10;
-
-    const DEFAULT_COURSES = {
-      'Arts & Sciences': [
-        'BA Communication',
-        'BS Biology',
-        'BS Psychology',
-        'AB English',
-        'BS Mathematics',
-        'AB Political Science'
-      ],
-      'Engineering': [
-        'BS Civil Engineering',
-        'BS Computer Engineering',
-        'BS Mechanical Engineering',
-        'BS Electronics Engineering',
-        'BS Industrial Engineering'
-      ],
-      'Education': [
-        'BSEd English',
-        'BEEd General Education',
-        'BSEd Mathematics',
-        'BSEd Science',
-        'BSEd Filipino',
-        'BSEd Social Studies'
-      ],
-      'Nursing': ['BS Nursing'],
-      'Business': [
-        'BS Business Administration',
-        'BS Entrepreneurship',
-        'BS Accountancy',
-        'BS Marketing Management'
-      ]
-    };
 
     const state = {
       session: null,
@@ -1988,6 +2009,7 @@
       editorOpen: false,
       menuOpen: false,
       filtersOpen: window.innerWidth > 768,
+      editMode: false,
       currentPage: 1
     };
 
@@ -2041,6 +2063,8 @@
 
       toggleFiltersBtn: document.getElementById('toggleFiltersBtn'),
       toggleFiltersBtnText: document.getElementById('toggleFiltersBtnText'),
+      editModeBtn: document.getElementById('editModeBtn'),
+      editModeBtnText: document.getElementById('editModeBtnText'),
       compactFilterTitle: document.getElementById('compactFilterTitle'),
       compactFilterText: document.getElementById('compactFilterText'),
       filterToolbar: document.getElementById('filterToolbar'),
@@ -2113,7 +2137,7 @@
 
     let toastTimer = null;
 
-    function pad2(num) {
+       function pad2(num) {
       return String(num).padStart(2, '0');
     }
 
@@ -2301,22 +2325,20 @@
     }
 
     function getAllColleges() {
-      return uniq([
-        ...Object.keys(DEFAULT_COURSES),
-        ...state.students.map(s => s.college)
-      ]).sort((a, b) => a.localeCompare(b));
+      return uniq(
+        state.students
+          .map(s => String(s.college || '').trim())
+          .filter(Boolean)
+      ).sort((a, b) => a.localeCompare(b));
     }
 
     function getCoursesForCollege(college) {
-      const fromStudents = state.students
-        .filter(s => (college === 'All' ? true : s.college === college))
-        .map(s => s.course);
-
-      const fromDefaults = college === 'All'
-        ? Object.values(DEFAULT_COURSES).flat()
-        : (DEFAULT_COURSES[college] || []);
-
-      return uniq([...fromDefaults, ...fromStudents]).sort((a, b) => a.localeCompare(b));
+      return uniq(
+        state.students
+          .filter(s => college === 'All' ? true : s.college === college)
+          .map(s => String(s.course || '').trim())
+          .filter(Boolean)
+      ).sort((a, b) => a.localeCompare(b));
     }
 
     function normalizeStudent(raw, prev = null) {
@@ -2370,7 +2392,7 @@
       return data;
     }
 
-    function setDataFromResponse(res, syncInputs = false) {
+    function setDataFromResponse(res, syncInputs = false, resetEditMode = false) {
       const prevById = new Map(state.students.map(s => [s.id, s]));
 
       state.session = res.session || state.session;
@@ -2395,6 +2417,8 @@
 
       const validCourses = ['All', ...getCoursesForCollege(state.selectedCollege)];
       if (!validCourses.includes(state.selectedCourse)) state.selectedCourse = 'All';
+
+      if (resetEditMode) state.editMode = false;
 
       renderAll();
     }
@@ -2517,8 +2541,7 @@
         el.sessionSelect.appendChild(option);
       });
     }
-
-    function renderCollegeFilters() {
+        function renderCollegeFilters() {
       const colleges = getAllColleges();
 
       if (el.collegeFilterSelect) {
@@ -2558,6 +2581,15 @@
       if (el.studentCollegeInput) {
         const currentCollege = el.studentCollegeInput.value;
         el.studentCollegeInput.innerHTML = '';
+
+        if (!colleges.length) {
+          const option = document.createElement('option');
+          option.value = '';
+          option.textContent = 'No colleges available';
+          el.studentCollegeInput.appendChild(option);
+          return;
+        }
+
         colleges.forEach(college => {
           const option = document.createElement('option');
           option.value = college;
@@ -2597,6 +2629,15 @@
       const current = el.studentCourseInput.value;
 
       el.studentCourseInput.innerHTML = '';
+
+      if (!courses.length) {
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = 'No courses available';
+        el.studentCourseInput.appendChild(option);
+        return;
+      }
+
       courses.forEach(course => {
         const option = document.createElement('option');
         option.value = course;
@@ -2745,6 +2786,14 @@
       el.paginationBar.classList.toggle('hidden', total === 0);
     }
 
+    function renderEditMode() {
+      if (!el.editModeBtn || !el.editModeBtnText) return;
+
+      el.editModeBtn.classList.toggle('active', state.editMode);
+      el.editModeBtn.setAttribute('aria-pressed', state.editMode ? 'true' : 'false');
+      el.editModeBtnText.textContent = state.editMode ? 'Edit On' : 'Edit Off';
+    }
+
     function renderStudentList() {
       if (!el.studentList || !el.emptyState) return;
 
@@ -2774,8 +2823,10 @@
           ? `${escapeHtml(student.course)} • ${escapeHtml(student.college)} • Checked in ${escapeHtml(formatDateDisplay(checkedInDate))} ${escapeHtml(formatTimeDisplay(checkedInTime))}`
           : `${escapeHtml(student.course)} • ${escapeHtml(student.college)}`;
 
+        const locked = !state.editMode || state.savingAttendance;
+
         const row = document.createElement('article');
-        row.className = `student-row${student.attended ? ' checked' : ''}${state.savingAttendance ? ' saving' : ''}`;
+        row.className = `student-row${student.attended ? ' checked' : ''}${state.savingAttendance ? ' saving' : ''}${locked ? ' locked' : ''}`;
         row.innerHTML = `
           <div class="check-btn" aria-hidden="true">✓</div>
           <div class="student-info">
@@ -2787,7 +2838,10 @@
           <div class="student-id">${escapeHtml(student.id)}</div>
         `;
 
-        row.addEventListener('click', () => toggleAttendance(student.id, !student.attended));
+        if (state.editMode && !state.savingAttendance) {
+          row.addEventListener('click', () => toggleAttendance(student.id, !student.attended));
+        }
+
         fragment.appendChild(row);
       });
 
@@ -2907,6 +2961,7 @@
       renderCollegeFilters();
       renderCourseFilterOptions();
       renderFilterSummaryBar();
+      renderEditMode();
       renderStudentList();
       renderDashboardSummary();
       renderCollegeStats();
@@ -2960,7 +3015,7 @@
       if (el.saveStudentBtnText) el.saveStudentBtnText.textContent = isSaving ? 'Saving...' : 'Save Student';
     }
 
-    async function initializeApp() {
+       async function initializeApp() {
       applyTheme();
       bindEvents();
       setEditorOpen(false);
@@ -2972,7 +3027,7 @@
 
       try {
         const res = await serverRequest('init', {});
-        setDataFromResponse(res, true);
+        setDataFromResponse(res, true, true);
         applyDefaultDraftValues();
         renderMetaPreview();
         showToast('Connected to Google Sheets.');
@@ -2993,7 +3048,7 @@
           ? await serverRequest('loadSession', { sessionId: state.session.id })
           : await serverRequest('init', {});
 
-        setDataFromResponse(res, true);
+        setDataFromResponse(res, true, true);
         setMenuOpen(false);
         showToast('Session refreshed.');
       } catch (error) {
@@ -3014,7 +3069,7 @@
       try {
         showLoading(true, 'Loading selected session...');
         const res = await serverRequest('loadSession', { sessionId });
-        setDataFromResponse(res, true);
+        setDataFromResponse(res, true, true);
         setMenuOpen(false);
         showToast('Session loaded.');
         if (window.innerWidth <= 640) setEditorOpen(false);
@@ -3046,7 +3101,7 @@
 
       try {
         const res = await serverRequest('saveSessionMeta', { session: draft });
-        setDataFromResponse(res, true);
+        setDataFromResponse(res, true, true);
         setMenuOpen(false);
         showToast(titleChanged ? 'New sheet/session created from updated title.' : 'Session details saved.');
         if (window.innerWidth <= 640) setEditorOpen(false);
@@ -3059,6 +3114,11 @@
     }
 
     async function toggleAttendance(studentId, attended) {
+      if (!state.editMode) {
+        showToast('Turn Edit On first to record attendance.');
+        return;
+      }
+
       if (state.savingAttendance) return;
 
       const target = state.students.find(s => s.id === studentId);
@@ -3073,6 +3133,7 @@
       target.checkedInAt = attended ? `${getLocalDateISO()}T${getLocalTimeHHMM()}:00` : '';
 
       renderFilterSummaryBar();
+      renderEditMode();
       renderStudentList();
       renderDashboardSummary();
       renderCollegeStats();
@@ -3086,7 +3147,7 @@
           attended
         });
 
-        setDataFromResponse(res, false);
+        setDataFromResponse(res, false, false);
         closeAttendanceSavingModal();
       } catch (error) {
         console.error(error);
@@ -3097,6 +3158,7 @@
         showToast(error.message || 'Unable to save attendance.');
       } finally {
         state.savingAttendance = false;
+        renderEditMode();
         renderStudentList();
       }
     }
@@ -3141,7 +3203,7 @@
           student
         });
 
-        setDataFromResponse(res, false);
+        setDataFromResponse(res, false, false);
         resetAddStudentForm();
         closeAddStudentModal();
         showToast('Student added successfully.');
@@ -3182,6 +3244,15 @@
       if (el.toggleFiltersBtn) {
         el.toggleFiltersBtn.addEventListener('click', () => {
           setFiltersOpen(!state.filtersOpen);
+        });
+      }
+
+      if (el.editModeBtn) {
+        el.editModeBtn.addEventListener('click', () => {
+          state.editMode = !state.editMode;
+          renderEditMode();
+          renderStudentList();
+          showToast(state.editMode ? 'Edit mode enabled.' : 'Edit mode disabled.');
         });
       }
 
