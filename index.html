@@ -338,7 +338,8 @@
     .modal-panel,
     .editor-card,
     .session-hero-card,
-    .quick-summary-strip{
+    .quick-summary-strip,
+    .saving-panel{
       background:var(--surface);
       border:1px solid var(--line);
       box-shadow:var(--shadow);
@@ -936,6 +937,7 @@
       cursor:pointer;
       background:transparent;
       min-height:78px;
+      user-select:none;
     }
 
     .student-row:last-child{
@@ -948,6 +950,11 @@
 
     .student-row.checked{
       background:var(--primary-soft);
+    }
+
+    .student-row.saving{
+      pointer-events:none;
+      opacity:.72;
     }
 
     .check-btn{
@@ -1273,6 +1280,53 @@
       overflow:auto;
     }
 
+    .center-modal{
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+
+    .saving-panel{
+      width:min(92vw,360px);
+      border-radius:24px;
+      padding:24px 18px;
+      display:grid;
+      gap:14px;
+      text-align:center;
+      animation:fadeScale .18s ease;
+    }
+
+    .saving-spinner{
+      width:54px;
+      height:54px;
+      margin:0 auto;
+      border-radius:50%;
+      border:4px solid rgba(148,163,184,.25);
+      border-top-color:var(--primary);
+      animation:spin .8s linear infinite;
+    }
+
+    .saving-title{
+      margin:0;
+      font-size:1.15rem;
+      font-weight:900;
+      letter-spacing:-.02em;
+      color:var(--text);
+    }
+
+    .saving-subtitle{
+      margin:0;
+      color:var(--muted);
+      font-size:.92rem;
+      font-weight:700;
+      line-height:1.45;
+    }
+
+    @keyframes fadeScale{
+      from{opacity:0;transform:scale(.96)}
+      to{opacity:1;transform:scale(1)}
+    }
+
     @keyframes slideUp{
       from{opacity:0;transform:translateY(18px)}
       to{opacity:1;transform:translateY(0)}
@@ -1441,6 +1495,11 @@
 
       .student-list{
         min-height:calc(100vh - 250px);
+      }
+
+      .saving-panel{
+        width:min(94vw,340px);
+        padding:22px 16px;
       }
     }
 
@@ -1953,6 +2012,14 @@
     </div>
   </div>
 
+  <div class="modal center-modal" id="attendanceSavingModal" aria-hidden="true">
+    <div class="saving-panel">
+      <div class="saving-spinner"></div>
+      <p class="saving-title">Saving........</p>
+      <p class="saving-subtitle" id="attendanceSavingText">Please wait while attendance is being saved to Google Sheet.</p>
+    </div>
+  </div>
+
   <div id="loadingScreen" class="loading-screen">
     <div class="spinner"></div>
     <div style="font-weight:900;">Loading attendance tracker...</div>
@@ -2013,6 +2080,7 @@
       theme: localStorage.getItem('sat-theme') === 'dark' ? 'dark' : 'light',
       savingSession: false,
       savingStudent: false,
+      savingAttendance: false,
       editorOpen: false,
       menuOpen: false,
       filtersOpen: window.innerWidth > 768
@@ -2022,7 +2090,6 @@
       body: document.body,
 
       topPanel: document.getElementById('topPanel'),
-      compactTopStrip: document.getElementById('compactTopStrip'),
       compactSessionTitle: document.getElementById('compactSessionTitle'),
       compactSessionMeta: document.getElementById('compactSessionMeta'),
       compactSheetName: document.getElementById('compactSheetName'),
@@ -2126,6 +2193,9 @@
       studentCollegeInput: document.getElementById('studentCollegeInput'),
       studentCourseInput: document.getElementById('studentCourseInput'),
 
+      attendanceSavingModal: document.getElementById('attendanceSavingModal'),
+      attendanceSavingText: document.getElementById('attendanceSavingText'),
+
       loadingScreen: document.getElementById('loadingScreen'),
       toast: document.getElementById('toast')
     };
@@ -2208,6 +2278,23 @@
       toastTimer = setTimeout(() => {
         el.toast.classList.remove('show');
       }, 3000);
+    }
+
+    function openAttendanceSavingModal(studentName = '') {
+      if (!el.attendanceSavingModal) return;
+      if (el.attendanceSavingText) {
+        el.attendanceSavingText.textContent = studentName
+          ? `Please wait while attendance for ${studentName} is being saved to Google Sheet.`
+          : 'Please wait while attendance is being saved to Google Sheet.';
+      }
+      el.attendanceSavingModal.classList.add('open');
+      el.attendanceSavingModal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeAttendanceSavingModal() {
+      if (!el.attendanceSavingModal) return;
+      el.attendanceSavingModal.classList.remove('open');
+      el.attendanceSavingModal.setAttribute('aria-hidden', 'true');
     }
 
     function applyTheme() {
@@ -2677,7 +2764,7 @@
 
       filtered.forEach(student => {
         const row = document.createElement('article');
-        row.className = `student-row${student.attended ? ' checked' : ''}`;
+        row.className = `student-row${student.attended ? ' checked' : ''}${state.savingAttendance ? ' saving' : ''}`;
 
         row.innerHTML = `
           <div class="check-btn" aria-hidden="true">
@@ -2970,10 +3057,15 @@
     }
 
     async function toggleAttendance(studentId, attended) {
+      if (state.savingAttendance) return;
+
       const target = state.students.find(s => s.id === studentId);
       if (!target || !state.session?.id) return;
 
       const previous = target.attended;
+      const studentName = `${target.first} ${target.last}`.trim();
+
+      state.savingAttendance = true;
       target.attended = attended;
 
       renderFilterSummaryBar();
@@ -2981,6 +3073,7 @@
       renderDashboardSummary();
       renderCollegeStats();
       renderCourseBreakdown();
+      openAttendanceSavingModal(studentName);
 
       try {
         const res = await serverRequest('toggleAttendance', {
@@ -2990,11 +3083,16 @@
         });
 
         setDataFromResponse(res, false);
+        closeAttendanceSavingModal();
       } catch (error) {
         console.error(error);
         target.attended = previous;
+        closeAttendanceSavingModal();
         renderAll();
         showToast(error.message || 'Unable to save attendance.');
+      } finally {
+        state.savingAttendance = false;
+        renderStudentList();
       }
     }
 
