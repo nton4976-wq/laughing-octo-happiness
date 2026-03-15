@@ -3,12 +3,11 @@
 <head>
   <link rel="icon" href="data:,">
   <link rel="manifest" href="manifest.webmanifest">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0b5d1e">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Student Attendance Tracker</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -553,6 +552,12 @@
       box-shadow:0 0 0 4px var(--primary-soft-2);
     }
 
+    .field select:disabled,
+    .field input:disabled{
+      opacity:.65;
+      cursor:not-allowed;
+    }
+
     .title-input{
       font-size:clamp(1.1rem,2.5vw,1.8rem);
       font-weight:900;
@@ -895,6 +900,36 @@
       transition:width .28s ease;
     }
 
+    .time-range-wrap{
+      display:grid;
+      grid-template-columns:1fr auto 1fr;
+      gap:10px;
+      align-items:center;
+    }
+
+    .time-range-wrap input{
+      width:100%;
+      min-height:48px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:var(--surface-2);
+      padding:0 14px;
+      outline:none;
+      transition:.2s ease;
+    }
+
+    .time-range-wrap input:focus{
+      border-color:var(--primary);
+      box-shadow:0 0 0 4px var(--primary-soft-2);
+    }
+
+    .time-range-sep{
+      color:var(--muted);
+      font-weight:900;
+      font-size:.9rem;
+      text-align:center;
+    }
+
     .student-list{
       border-radius:20px;
       overflow:hidden;
@@ -985,27 +1020,29 @@
     }
 
     .student-id{
+      min-width:92px;
+      text-align:right;
       white-space:nowrap;
-      color:#94a3b8;
-      font-weight:800;
+      color:var(--text-soft);
+      font-weight:900;
       font-size:.86rem;
     }
 
     .pagination-bar{
       margin-top:12px;
+      margin-bottom:24px;
       border-radius:18px;
-      padding:12px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
+      padding:14px 12px;
+      display:grid;
+      gap:14px;
     }
 
     .pagination-meta{
       display:grid;
-      gap:3px;
+      gap:4px;
       min-width:0;
+      justify-items:center;
+      text-align:center;
     }
 
     .pagination-page{
@@ -1021,9 +1058,16 @@
     }
 
     .pagination-actions{
-      display:flex;
-      align-items:center;
-      gap:10px;
+      width:100%;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .pagination-actions .secondary-btn{
+      width:100%;
+      min-height:52px;
+      border-radius:16px;
     }
 
     .empty{
@@ -1464,28 +1508,12 @@
         flex:1 1 160px;
       }
 
-      .pagination-bar{
-        flex-direction:column;
-        align-items:center;
-        text-align:center;
-        margin-bottom:110px;
+      .time-range-wrap{
+        grid-template-columns:1fr;
       }
 
-      .pagination-meta{
-        width:100%;
-        justify-items:center;
-        text-align:center;
-      }
-
-      .pagination-actions{
-        width:100%;
-        justify-content:center;
-        flex-wrap:wrap;
-        gap:12px;
-      }
-
-      .pagination-actions .secondary-btn{
-        min-width:120px;
+      .time-range-sep{
+        display:none;
       }
 
       #attendancePage{
@@ -1493,44 +1521,7 @@
       }
 
       .pagination-bar{
-        margin-top:12px;
-        margin-bottom:24px;
-        border-radius:18px;
-        padding:12px;
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        gap:10px;
-        flex-wrap:wrap;
-      }
-
-      .pagination-meta{
-        display:grid;
-        gap:3px;
-        min-width:0;
-      }
-
-      .pagination-page{
-        font-size:.92rem;
-        font-weight:900;
-        color:var(--text);
-      }
-
-      .pagination-range{
-        font-size:.84rem;
-        font-weight:800;
-        color:var(--muted);
-      }
-
-      .pagination-actions{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        gap:12px;
-      }
-
-      .pagination-actions .secondary-btn{
-        min-width:110px;
+        margin-bottom:120px;
       }
     }
 
@@ -1571,6 +1562,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="app">
     <header class="topbar">
@@ -1744,12 +1736,12 @@
       </div>
     </header>
 
-        <main>
+    <main>
       <section id="attendancePage" class="page active" aria-label="Attendance page">
         <div class="filters-mini-bar">
           <div class="filters-mini-copy">
             <strong id="compactFilterTitle">Filters hidden</strong>
-            <span id="compactFilterText">All Colleges • All Courses</span>
+            <span id="compactFilterText">All Colleges • Course locked</span>
           </div>
 
           <div class="filters-mini-actions">
@@ -1780,7 +1772,9 @@
 
             <div class="field">
               <label for="courseFilterSelect">Course</label>
-              <select id="courseFilterSelect"></select>
+              <select id="courseFilterSelect" disabled>
+                <option value="All">Select a college first</option>
+              </select>
             </div>
 
             <div class="field">
@@ -1793,13 +1787,17 @@
             </div>
 
             <div class="field">
-              <label for="dateFilterInput">Date filter</label>
+              <label for="dateFilterInput">Date checked</label>
               <input id="dateFilterInput" type="date" />
             </div>
 
-            <div class="field">
-              <label for="timeFilterInput">Time filter</label>
-              <input id="timeFilterInput" type="time" />
+            <div class="field full-span">
+              <label>Time checked range</label>
+              <div class="time-range-wrap">
+                <input id="timeFilterStartInput" type="time" />
+                <span class="time-range-sep">to</span>
+                <input id="timeFilterEndInput" type="time" />
+              </div>
             </div>
           </div>
 
@@ -1993,7 +1991,7 @@
   <script>
   (() => {
     const API_URL = 'https://script.google.com/macros/s/AKfycbwM5_AjuFp0W29090T3fNQWi7eZ_ZFmiyMJRqElfvQjv3oor4_bwPJDYn3B1nsgWFqd/exec';
-    const PAGE_SIZE = 10;
+    const PAGE_SIZE = 30;
 
     const state = {
       session: null,
@@ -2005,7 +2003,8 @@
       selectedCourse: 'All',
       selectedAttendanceStatus: 'all',
       selectedDate: '',
-      selectedTime: '',
+      selectedTimeStart: '',
+      selectedTimeEnd: '',
       collegePanelOpen: false,
       selectedBreakdownCollege: '',
       theme: localStorage.getItem('sat-theme') === 'dark' ? 'dark' : 'light',
@@ -2080,7 +2079,8 @@
       courseFilterSelect: document.getElementById('courseFilterSelect'),
       attendanceStatusFilterSelect: document.getElementById('attendanceStatusFilterSelect'),
       dateFilterInput: document.getElementById('dateFilterInput'),
-      timeFilterInput: document.getElementById('timeFilterInput'),
+      timeFilterStartInput: document.getElementById('timeFilterStartInput'),
+      timeFilterEndInput: document.getElementById('timeFilterEndInput'),
 
       toggleThemeBtn: document.getElementById('toggleThemeBtn'),
       themeBtnIcon: document.getElementById('themeBtnIcon'),
@@ -2142,8 +2142,7 @@
     };
 
     let toastTimer = null;
-
-       function pad2(num) {
+        function pad2(num) {
       return String(num).padStart(2, '0');
     }
 
@@ -2185,6 +2184,25 @@
       if (!timeStr || !/^\d{2}:\d{2}$/.test(timeStr)) return null;
       const [h, m] = timeStr.split(':').map(Number);
       return h * 60 + m;
+    }
+
+    function isTimeWithinRange(timeStr, startStr, endStr) {
+      const value = toMinutes(timeStr);
+      if (value === null) return false;
+
+      const start = toMinutes(startStr);
+      const end = toMinutes(endStr);
+
+      if (start !== null && end !== null) {
+        const from = Math.min(start, end);
+        const to = Math.max(start, end);
+        return value >= from && value <= to;
+      }
+
+      if (start !== null) return value >= start;
+      if (end !== null) return value <= end;
+
+      return true;
     }
 
     function parseCheckedInDate(value) {
@@ -2547,7 +2565,8 @@
         el.sessionSelect.appendChild(option);
       });
     }
-        function renderCollegeFilters() {
+
+    function renderCollegeFilters() {
       const colleges = getAllColleges();
 
       if (el.collegeFilterSelect) {
@@ -2576,6 +2595,7 @@
           btn.addEventListener('click', () => {
             state.selectedCollege = college;
             state.currentPage = 1;
+            state.selectedCourse = 'All';
             if (state.selectedCollege !== 'All') state.selectedBreakdownCollege = state.selectedCollege;
             renderCourseFilterOptions();
             renderAll();
@@ -2611,17 +2631,44 @@
     }
 
     function renderCourseFilterOptions() {
-      const courses = getCoursesForCollege(state.selectedCollege);
+      const collegeChosen = state.selectedCollege !== 'All';
+      const courses = collegeChosen ? getCoursesForCollege(state.selectedCollege) : [];
 
       if (el.courseFilterSelect) {
         el.courseFilterSelect.innerHTML = '';
-        ['All', ...courses].forEach(course => {
+
+        if (!collegeChosen) {
+          state.selectedCourse = 'All';
+          el.courseFilterSelect.disabled = true;
+
           const option = document.createElement('option');
-          option.value = course;
-          option.textContent = course === 'All' ? 'All Courses' : course;
-          if (course === state.selectedCourse) option.selected = true;
+          option.value = 'All';
+          option.textContent = 'Select a college first';
+          option.selected = true;
           el.courseFilterSelect.appendChild(option);
-        });
+        } else {
+          el.courseFilterSelect.disabled = false;
+
+          const allOption = document.createElement('option');
+          allOption.value = 'All';
+          allOption.textContent = 'All Courses';
+          el.courseFilterSelect.appendChild(allOption);
+
+          courses.forEach(course => {
+            const option = document.createElement('option');
+            option.value = course;
+            option.textContent = course;
+            if (course === state.selectedCourse) option.selected = true;
+            el.courseFilterSelect.appendChild(option);
+          });
+
+          const validCourses = ['All', ...courses];
+          if (!validCourses.includes(state.selectedCourse)) {
+            state.selectedCourse = 'All';
+          }
+
+          el.courseFilterSelect.value = state.selectedCourse;
+        }
       }
 
       renderModalCourseOptions();
@@ -2657,20 +2704,6 @@
       }
     }
 
-    function matchesScheduledTime(student, filterTime) {
-      if (!filterTime) return true;
-      const selected = toMinutes(filterTime);
-      if (selected === null) return true;
-
-      const start = toMinutes(student.sessionStartTime);
-      const end = toMinutes(student.sessionEndTime);
-
-      if (start !== null && end !== null) return selected >= start && selected <= end;
-      if (start !== null) return selected === start;
-      if (end !== null) return selected === end;
-      return false;
-    }
-
     function matchesFilters(student) {
       const search = state.search.trim().toLowerCase();
 
@@ -2689,41 +2722,33 @@
         state.selectedCollege === 'All' || student.college === state.selectedCollege;
 
       const matchCourse =
-        state.selectedCourse === 'All' || student.course === state.selectedCourse;
+        state.selectedCollege === 'All'
+          ? true
+          : (state.selectedCourse === 'All' || student.course === state.selectedCourse);
 
       let matchStatus = true;
-      let matchDate = true;
-      let matchTime = true;
 
       if (state.selectedAttendanceStatus === 'attended') {
         matchStatus = student.attended === true;
-
-        if (state.selectedDate) {
-          matchDate = getCheckedInDateISO(student) === state.selectedDate;
-        }
-
-        if (state.selectedTime) {
-          matchTime = getCheckedInTimeHHMM(student) === state.selectedTime;
-        }
       } else if (state.selectedAttendanceStatus === 'not-attended') {
         matchStatus = student.attended === false;
-
-        if (state.selectedDate) {
-          matchDate = student.sessionDate === state.selectedDate;
-        }
-
-        if (state.selectedTime) {
-          matchTime = matchesScheduledTime(student, state.selectedTime);
-        }
-      } else {
-        if (state.selectedDate) {
-          matchDate = student.sessionDate === state.selectedDate;
-        }
-
-        if (state.selectedTime) {
-          matchTime = matchesScheduledTime(student, state.selectedTime);
-        }
       }
+
+      const checkedDate = getCheckedInDateISO(student);
+      const checkedTime = getCheckedInTimeHHMM(student);
+      const hasCheckedRecord = !!student.attended && !!checkedDate;
+
+      const matchDate =
+        !state.selectedDate ||
+        (hasCheckedRecord && checkedDate === state.selectedDate);
+
+      const matchTime =
+        (!state.selectedTimeStart && !state.selectedTimeEnd) ||
+        (hasCheckedRecord && isTimeWithinRange(
+          checkedTime,
+          state.selectedTimeStart,
+          state.selectedTimeEnd
+        ));
 
       return matchSearch && matchCollege && matchCourse && matchStatus && matchDate && matchTime;
     }
@@ -2749,7 +2774,13 @@
 
       const labelParts = [];
       labelParts.push(state.selectedCollege === 'All' ? 'All Colleges' : state.selectedCollege);
-      labelParts.push(state.selectedCourse === 'All' ? 'All Courses' : state.selectedCourse);
+
+      if (state.selectedCollege === 'All') {
+        labelParts.push('Course locked');
+      } else {
+        labelParts.push(state.selectedCourse === 'All' ? 'All Courses' : state.selectedCourse);
+      }
+
       labelParts.push(
         state.selectedAttendanceStatus === 'all'
           ? 'All Status'
@@ -2758,8 +2789,15 @@
             : 'Not Attended'
       );
 
-      if (state.selectedDate) labelParts.push(formatDateDisplay(state.selectedDate));
-      if (state.selectedTime) labelParts.push(formatTimeDisplay(state.selectedTime));
+      if (state.selectedDate) {
+        labelParts.push(formatDateDisplay(state.selectedDate));
+      }
+
+      if (state.selectedTimeStart || state.selectedTimeEnd) {
+        const startLabel = state.selectedTimeStart ? formatTimeDisplay(state.selectedTimeStart) : 'Start';
+        const endLabel = state.selectedTimeEnd ? formatTimeDisplay(state.selectedTimeEnd) : 'End';
+        labelParts.push(`${startLabel} - ${endLabel}`);
+      }
 
       if (el.currentFilterName) el.currentFilterName.textContent = labelParts.join(' • ');
       if (el.filterBarLabel) el.filterBarLabel.textContent = `${stats.percent}% • ${stats.attended} / ${stats.total}`;
@@ -2841,7 +2879,7 @@
             </h3>
             <p class="student-sub">${subText}</p>
           </div>
-          <div class="student-id">${escapeHtml(student.id)}</div>
+          <div class="student-id">${escapeHtml(student.attended && checkedInTime ? formatTimeDisplay(checkedInTime) : '—')}</div>
         `;
 
         if (state.editMode && !state.savingAttendance) {
@@ -2978,8 +3016,7 @@
       setFiltersOpen(state.filtersOpen);
       updateQuickStripVisibility();
     }
-
-    function openAddStudentModal() {
+        function openAddStudentModal() {
       if (!state.session) {
         showToast('Save or load a session first.');
         return;
@@ -3021,7 +3058,7 @@
       if (el.saveStudentBtnText) el.saveStudentBtnText.textContent = isSaving ? 'Saving...' : 'Save Student';
     }
 
-       async function initializeApp() {
+    async function initializeApp() {
       applyTheme();
       bindEvents();
       setEditorOpen(false);
@@ -3300,6 +3337,7 @@
       if (el.collegeFilterSelect) {
         el.collegeFilterSelect.addEventListener('change', e => {
           state.selectedCollege = e.target.value;
+          state.selectedCourse = 'All';
           state.currentPage = 1;
           if (state.selectedCollege !== 'All') state.selectedBreakdownCollege = state.selectedCollege;
           renderCourseFilterOptions();
@@ -3337,9 +3375,19 @@
         });
       }
 
-      if (el.timeFilterInput) {
-        el.timeFilterInput.addEventListener('input', e => {
-          state.selectedTime = e.target.value;
+      if (el.timeFilterStartInput) {
+        el.timeFilterStartInput.addEventListener('input', e => {
+          state.selectedTimeStart = e.target.value;
+          state.currentPage = 1;
+          renderFilterSummaryBar();
+          renderStudentList();
+          renderDashboardSummary();
+        });
+      }
+
+      if (el.timeFilterEndInput) {
+        el.timeFilterEndInput.addEventListener('input', e => {
+          state.selectedTimeEnd = e.target.value;
           state.currentPage = 1;
           renderFilterSummaryBar();
           renderStudentList();
@@ -3410,10 +3458,10 @@
   })();
   </script>
 
-    <script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./sw.js");
-}
-</script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js");
+    }
+  </script>
 </body>
 </html>
