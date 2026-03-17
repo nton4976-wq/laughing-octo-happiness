@@ -1,6 +1,6 @@
 {
-  "name": "Cares Attendance Monitoring",
-  "short_name": "Cares Attendance",
+  "name": "Event Attendance",
+  "short_name": "Event Attendance",
   "start_url": "/laughing-octo-happiness/",
   "scope": "/laughing-octo-happiness/",
   "display": "fullscreen",
